@@ -62,7 +62,15 @@ bool Adafruit_BMP280::begin(uint8_t a, uint8_t chipid) {
     return false;
 
   readCoefficients();
-  write8(BMP280_REGISTER_CONTROL, 0x3F);
+
+  // Set t_sb to 010 = 125ms.  Step response will settle
+  // down after three to four seconds.
+  // Set filter to 100, which means  16; recommended for ultra high resolution
+  // Set osrs_t to 010, which means  x2; recommended for ultra high resolution
+  // Set osrs_p to 101, which means x16; recommended for ultra high resolution
+
+  write8(BMP280_REGISTER_CONFIG,  0x50);  // t_sb=010  filter=100 spare=0 SPI3w_en=0 0101.0000
+  write8(BMP280_REGISTER_CONTROL, 0x57);  // osrs_t=010 osrs_p=101 mode=11 0101.0111
   return true;
 }
 
